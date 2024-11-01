@@ -17,6 +17,8 @@ import {
 } from "../src/utils.js";
 
 import { getConfig, setConfig, configRequired } from "../src/config.js";
+import { processShows } from "../src/shows.js";
+import { processMovies } from "../src/movies.js";
 
 // Ensure all required config values are set
 for (const [key, message] of Object.entries(configRequired)) {
@@ -57,6 +59,7 @@ const plexSections = await loadSections();
 
 for (const section of sections) {
   logBlue(`Processing section: ${section}`);
+  console.log("");
 
   const sectionConfig = plexSections[section];
   if (!sectionConfig) {
@@ -66,7 +69,6 @@ for (const section of sections) {
   }
 
   const plexCache = await buildPlexCache(sectionConfig);
-  console.log("");
 
   if (sectionConfig.type === "movie") {
     const watchedMovies = await trakt.users.watched({
@@ -74,84 +76,13 @@ for (const section of sections) {
       type: "movies",
     });
 
-    logBlue(`Processing watched movies: ${watchedMovies.length}`);
-    console.log("");
-
-    for (const movie of watchedMovies) {
-      console.log(movie.movie.title);
-      const plexGuid = findPlexGuid(plexCache, movie.movie.ids);
-
-      if (plexGuid) {
-        if (plexCache.lastViewedAt[plexGuid]) {
-          logYellow("Already marked as watched in Plex");
-        } else {
-          logGreen("Marking as watched in Plex");
-          await markAsWatched(plexGuid);
-        }
-      } else {
-        logRed(`Could not find in Plex Section: ${sectionConfig.title}`);
-      }
-
-      console.log("");
-    }
+    await processMovies(plexCache, sectionConfig, watchedMovies);
   } else if (sectionConfig.type === "show") {
     const watchedShows = await trakt.users.watched({
       username: getConfig("traktUsername"),
       type: "shows",
     });
 
-    logBlue(`Processing watched shows: ${watchedShows.length}`);
-    console.log("");
-
-    for (const show of watchedShows) {
-      console.log(show.show.title);
-
-      const plexGuid = findPlexGuid(plexCache, show.show.ids);
-      const plexKey = plexCache.keys[plexGuid];
-
-      if (plexGuid && plexKey) {
-        const plexEpisodesCache = await buildPlexEpisodesCache(plexKey);
-
-        for (const season of show.seasons) {
-          for (const episode of season.episodes) {
-            const episodeInPlex =
-              plexEpisodesCache[season.number]?.[episode.number];
-
-            const episodeWatchedInPlex = episodeInPlex?.lastViewedAt;
-
-            if (episodeWatchedInPlex) {
-              logYellow(
-                `${formatSeasonEpisode(
-                  season.number,
-                  episode.number
-                )} already marked as watched`
-              );
-            } else {
-              if (episodeInPlex) {
-                logGreen(
-                  `${formatSeasonEpisode(
-                    season.number,
-                    episode.number
-                  )} marked as watched`
-                );
-
-                await markAsWatched(episodeInPlex?.key);
-              } else {
-                logRed(
-                  `${formatSeasonEpisode(
-                    season.number,
-                    episode.number
-                  )} not found in Plex Section: ${sectionConfig.title}`
-                );
-              }
-            }
-          }
-        }
-      } else {
-        logRed(`Could not find in Plex Section: ${sectionConfig.title}`);
-      }
-
-      console.log("");
-    }
+    await processShows(plexCache, sectionConfig, watchedShows);
   }
 }
