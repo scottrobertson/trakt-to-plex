@@ -24,7 +24,7 @@ async function processShow(plexCache, sectionConfig, show) {
   const showWatched = plexCache.watched[plexGuid];
 
   if (showWatched) {
-    logYellow("All episodes in Plex are marked as watched");
+    logYellow("All available episodes already watched in Plex");
     console.log("");
     return;
   }
@@ -46,9 +46,9 @@ async function processShow(plexCache, sectionConfig, show) {
           const episodeWatchedInPlex = episodeInPlex?.watched;
 
           if (episodeWatchedInPlex) {
-            logYellow(`${formattedEpisode} already marked as watched`);
+            logYellow(`${formattedEpisode} already watched in Plex`);
           } else {
-            logGreen(`${formattedEpisode} marked as watched`);
+            logGreen(`${formattedEpisode} marked as watched in Plex`);
             await markAsWatched(episodeInPlex?.key);
           }
         } else {

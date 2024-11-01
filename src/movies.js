@@ -19,9 +19,9 @@ async function processMovie(plexCache, sectionConfig, movie) {
 
   if (plexGuid) {
     if (plexCache.watched[plexGuid]) {
-      logYellow("Already marked as watched in Plex");
+      logYellow("Already watched in Plex");
     } else {
-      logGreen("Marking as watched in Plex");
+      logGreen("Marked as watched in Plex");
       await markAsWatched(plexGuid);
     }
   } else {
