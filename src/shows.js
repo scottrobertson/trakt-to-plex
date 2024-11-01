@@ -34,36 +34,27 @@ async function processShow(plexCache, sectionConfig, show) {
 
     for (const season of show.seasons) {
       for (const episode of season.episodes) {
+        const formattedEpisode = formatSeasonEpisode(
+          season.number,
+          episode.number
+        );
+
         const episodeInPlex =
           plexEpisodesCache[season.number]?.[episode.number];
 
-        const episodeWatchedInPlex = episodeInPlex?.watched;
+        if (episodeInPlex) {
+          const episodeWatchedInPlex = episodeInPlex?.watched;
 
-        if (episodeWatchedInPlex) {
-          logYellow(
-            `${formatSeasonEpisode(
-              season.number,
-              episode.number
-            )} already marked as watched`
-          );
-        } else {
-          if (episodeInPlex) {
-            logGreen(
-              `${formatSeasonEpisode(
-                season.number,
-                episode.number
-              )} marked as watched`
-            );
-
-            await markAsWatched(episodeInPlex?.key);
+          if (episodeWatchedInPlex) {
+            logYellow(`${formattedEpisode} already marked as watched`);
           } else {
-            logRed(
-              `${formatSeasonEpisode(
-                season.number,
-                episode.number
-              )} not found in Plex Section: ${sectionConfig.title}`
-            );
+            logGreen(`${formattedEpisode} marked as watched`);
+            await markAsWatched(episodeInPlex?.key);
           }
+        } else {
+          logRed(
+            `${formattedEpisode} not found in Plex Section: ${sectionConfig.title}`
+          );
         }
       }
     }
