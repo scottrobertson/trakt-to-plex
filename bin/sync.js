@@ -68,7 +68,7 @@ for (const section of sections) {
       type: "movies",
     });
 
-    logBlue("Processing watched movies", watchedMovies.length);
+    logBlue(`Processing watched movies: ${watchedMovies.length}`);
     console.log("");
 
     for (const movie of watchedMovies) {
@@ -94,7 +94,7 @@ for (const section of sections) {
       type: "shows",
     });
 
-    logBlue("Processing watched shows", watchedShows.length);
+    logBlue(`Processing watched shows: ${watchedShows.length}`);
     console.log("");
 
     for (const show of watchedShows) {
