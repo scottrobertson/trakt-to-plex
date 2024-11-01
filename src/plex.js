@@ -92,7 +92,7 @@ export async function markAsWatched(ratingKey) {
   }
 }
 
-export function findPlexGuid(plexCache, ids) {
+export function findPlexIdFromGuid(plexCache, ids) {
   for (const [service, id] of Object.entries(ids)) {
     const identifier = `${service}://${id}`;
     if (plexCache.guids[identifier]) {

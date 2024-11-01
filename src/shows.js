@@ -1,4 +1,8 @@
-import { buildPlexEpisodesCache, findPlexGuid, markAsWatched } from "./plex.js";
+import {
+  buildPlexEpisodesCache,
+  findPlexIdFromGuid,
+  markAsWatched,
+} from "./plex.js";
 import { logGreen, logRed, logYellow, formatSeasonEpisode } from "./utils.js";
 
 export async function processShows(plexCache, sectionConfig, watchedShows) {
@@ -15,7 +19,7 @@ export async function processShows(plexCache, sectionConfig, watchedShows) {
 }
 
 async function processShow(plexCache, sectionConfig, show) {
-  const plexGuid = findPlexGuid(plexCache, show.show.ids);
+  const plexGuid = findPlexIdFromGuid(plexCache, show.show.ids);
   const plexKey = plexCache.keys[plexGuid];
   const showWatched = plexCache.watched[plexGuid];
 
@@ -51,7 +55,7 @@ async function processShow(plexCache, sectionConfig, show) {
               )} marked as watched`
             );
 
-            // await markAsWatched(episodeInPlex?.key);
+            await markAsWatched(episodeInPlex?.key);
           } else {
             logRed(
               `${formatSeasonEpisode(

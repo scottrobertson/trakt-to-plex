@@ -1,21 +1,6 @@
 import Trakt from "trakt.tv";
-import {
-  buildPlexCache,
-  buildPlexEpisodesCache,
-  markAsWatched,
-  findPlexGuid,
-  loadSections,
-} from "../src/plex.js";
-
-import {
-  askQuestion,
-  logGreen,
-  logRed,
-  logYellow,
-  logBlue,
-  formatSeasonEpisode,
-} from "../src/utils.js";
-
+import { buildPlexCache, loadSections } from "../src/plex.js";
+import { askQuestion, logRed, logBlue } from "../src/utils.js";
 import { getConfig, setConfig, configRequired } from "../src/config.js";
 import { processShows } from "../src/shows.js";
 import { processMovies } from "../src/movies.js";

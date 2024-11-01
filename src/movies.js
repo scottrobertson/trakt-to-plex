@@ -1,4 +1,4 @@
-import { findPlexGuid, markAsWatched } from "./plex.js";
+import { findPlexIdFromGuid, markAsWatched } from "./plex.js";
 import { logGreen, logRed, logYellow } from "./utils.js";
 
 export async function processMovies(plexCache, sectionConfig, watchedMovies) {
@@ -15,7 +15,7 @@ export async function processMovies(plexCache, sectionConfig, watchedMovies) {
 }
 
 async function processMovie(plexCache, sectionConfig, movie) {
-  const plexGuid = findPlexGuid(plexCache, movie.movie.ids);
+  const plexGuid = findPlexIdFromGuid(plexCache, movie.movie.ids);
 
   if (plexGuid) {
     if (plexCache.watched[plexGuid]) {
