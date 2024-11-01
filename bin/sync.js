@@ -35,6 +35,34 @@ if (traktAccessToken) {
   });
 }
 
+logBlue("Fetching movies from Trakt");
+const traktWatchedMovies = await trakt.users.watched({
+  username: getConfig("traktUsername"),
+  type: "movies",
+});
+
+// Sort movies by name
+traktWatchedMovies.sort((a, b) => {
+  return a.movie.title.localeCompare(b.movie.title);
+});
+
+console.log(`Fetched ${traktWatchedMovies.length} movies from Trakt`);
+console.log("");
+
+logBlue("Fetching shows from Trakt");
+const traktWatchedShows = await trakt.users.watched({
+  username: getConfig("traktUsername"),
+  type: "shows",
+});
+
+// Sort shows by name
+traktWatchedShows.sort((a, b) => {
+  return a.show.title.localeCompare(b.show.title);
+});
+
+console.log(`Fetched ${traktWatchedShows.length} shows from Trakt`);
+console.log("");
+
 const sections = getConfig("plexSections");
 const plexSections = await loadSections();
 
@@ -52,18 +80,8 @@ for (const section of sections) {
   const plexCache = await buildPlexCache(sectionConfig);
 
   if (sectionConfig.type === "movie") {
-    const watchedMovies = await trakt.users.watched({
-      username: getConfig("traktUsername"),
-      type: "movies",
-    });
-
-    await processMovies(plexCache, sectionConfig, watchedMovies);
+    await processMovies(plexCache, sectionConfig, traktWatchedMovies);
   } else if (sectionConfig.type === "show") {
-    const watchedShows = await trakt.users.watched({
-      username: getConfig("traktUsername"),
-      type: "shows",
-    });
-
-    await processShows(plexCache, sectionConfig, watchedShows);
+    await processShows(plexCache, sectionConfig, traktWatchedShows);
   }
 }
