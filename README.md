@@ -8,4 +8,6 @@ This is specifically designed to work with very large Plex libraries. Most of th
 
 ### Install
 
-TODO
+- Clone repo
+- Run `npm install`
+- Run `npm run sync`
