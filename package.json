@@ -1,0 +1,13 @@
+{
+  "name": "trakt-to-plex",
+  "description": "Sync from Trakt to Plex",
+  "version": "0.0.0",
+  "author": "Scott Robertson",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "chalk": "^5.3.0",
+    "trakt.tv": "^8.2.0"
+  }
+}
