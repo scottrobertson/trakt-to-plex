@@ -15,7 +15,6 @@ export const configRequired = {
 
 let config = {};
 
-// Function to load the configuration from the JSON file
 export function loadConfig() {
   if (fs.existsSync(configPath)) {
     const data = fs.readFileSync(configPath, "utf-8");
@@ -27,17 +26,14 @@ export function loadConfig() {
   }
 }
 
-// Function to save the current config object to the file
 export function saveConfig() {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
 }
 
-// Function to get a configuration value by key
 export function getConfig(key) {
   return config[key];
 }
 
-// Function to set a configuration value and save it
 export function setConfig(key, value) {
   // We want to store this as an array
   if (key === "plexSections") {
