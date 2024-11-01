@@ -56,9 +56,15 @@ const sections = getConfig("plexSections")
 const plexSections = await loadSections();
 
 for (const section of sections) {
-  const sectionConfig = plexSections[section];
+  logBlue(`Processing section: ${section}`);
 
-  logBlue(`Processing section: ${sectionConfig.title}`);
+  const sectionConfig = plexSections[section];
+  if (!sectionConfig) {
+    logRed(`Section not found`);
+    console.log("");
+    continue;
+  }
+
   const plexCache = await buildPlexCache(sectionConfig);
   console.log("");
 
