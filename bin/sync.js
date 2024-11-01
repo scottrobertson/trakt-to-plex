@@ -94,6 +94,9 @@ for (const section of sections) {
       type: "shows",
     });
 
+    logBlue("Processing watched shows", watchedShows.length);
+    console.log("");
+
     for (const show of watchedShows) {
       console.log(show.show.title);
 
