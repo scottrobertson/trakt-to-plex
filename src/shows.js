@@ -13,7 +13,12 @@ export async function processShows(plexCache, sectionConfig, watchedShows) {
   console.log("");
 
   for (const [index, show] of watchedShows.entries()) {
-    console.log(`${index + 1}/${watchedShows.length} - ${show.show.title}`);
+    console.log(
+      `${index + 1}/${watchedShows.length} - ${show.show.title} (${
+        show.show.year
+      })`
+    );
+
     await processShow(plexCache, sectionConfig, show);
   }
 }

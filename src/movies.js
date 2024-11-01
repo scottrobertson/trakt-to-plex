@@ -9,7 +9,12 @@ export async function processMovies(plexCache, sectionConfig, watchedMovies) {
   console.log("");
 
   for (const [index, movie] of watchedMovies.entries()) {
-    console.log(`${index + 1}/${watchedMovies.length} - ${movie.movie.title}`);
+    console.log(
+      `${index + 1}/${watchedMovies.length} - ${movie.movie.title} (${
+        movie.movie.year
+      })`
+    );
+
     await processMovie(plexCache, sectionConfig, movie);
   }
 }
