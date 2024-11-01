@@ -44,7 +44,7 @@ if (traktAccessToken) {
 
   const code = await askQuestion("Enter the code: ");
 
-  await trakt.exchange_code(code).then((result) => {
+  trakt.exchange_code(code).then((result) => {
     setConfig("traktAccessToken", result.access_token);
   });
 }
