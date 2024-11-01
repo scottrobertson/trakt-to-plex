@@ -76,15 +76,8 @@ export async function markAsWatched(ratingKey) {
   const url = `${plexServer}/:/scrobble?key=${ratingKey}&identifier=com.plexapp.plugins.library&X-Plex-Token=${plexToken}`;
 
   try {
-    // Send the request to mark as watched
-    const response = await axios.get(url, {
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    if (response.status === 200) {
-    } else {
+    const response = await axios.get(url);
+    if (response.status !== 200) {
       console.error("Failed to mark as watched:", response.statusText);
     }
   } catch (error) {
