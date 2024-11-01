@@ -18,7 +18,7 @@ async function processMovie(plexCache, sectionConfig, movie) {
   const plexGuid = findPlexGuid(plexCache, movie.movie.ids);
 
   if (plexGuid) {
-    if (plexCache.lastViewedAt[plexGuid]) {
+    if (plexCache.watched[plexGuid]) {
       logYellow("Already marked as watched in Plex");
     } else {
       logGreen("Marking as watched in Plex");

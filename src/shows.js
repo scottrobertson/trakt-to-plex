@@ -17,6 +17,13 @@ export async function processShows(plexCache, sectionConfig, watchedShows) {
 async function processShow(plexCache, sectionConfig, show) {
   const plexGuid = findPlexGuid(plexCache, show.show.ids);
   const plexKey = plexCache.keys[plexGuid];
+  const showWatched = plexCache.watched[plexGuid];
+
+  if (showWatched) {
+    logYellow("All episodes in Plex are marked as watched");
+    console.log("");
+    return;
+  }
 
   if (plexGuid && plexKey) {
     const plexEpisodesCache = await buildPlexEpisodesCache(plexKey);
@@ -26,7 +33,7 @@ async function processShow(plexCache, sectionConfig, show) {
         const episodeInPlex =
           plexEpisodesCache[season.number]?.[episode.number];
 
-        const episodeWatchedInPlex = episodeInPlex?.lastViewedAt;
+        const episodeWatchedInPlex = episodeInPlex?.watched;
 
         if (episodeWatchedInPlex) {
           logYellow(
@@ -44,7 +51,7 @@ async function processShow(plexCache, sectionConfig, show) {
               )} marked as watched`
             );
 
-            await markAsWatched(episodeInPlex?.key);
+            // await markAsWatched(episodeInPlex?.key);
           } else {
             logRed(
               `${formatSeasonEpisode(

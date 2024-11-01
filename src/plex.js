@@ -29,7 +29,7 @@ export async function buildPlexCache(sectionConfig) {
   const response = await axios.get(requestUrl);
 
   const cache = {
-    lastViewedAt: {},
+    watched: {},
     guids: {},
     keys: {},
   };
@@ -37,8 +37,15 @@ export async function buildPlexCache(sectionConfig) {
   response.data.MediaContainer.Metadata.forEach(async (element) => {
     cache.keys[element.ratingKey] = element.key;
 
-    if (element.lastViewedAt) {
-      cache.lastViewedAt[element.ratingKey] = element.lastViewedAt;
+    if (element.type == "movie") {
+      if (element.viewCount > 0) {
+        cache.watched[element.ratingKey] = true;
+      }
+    } else if (element.type == "show") {
+      // Have all episodes have been watched?
+      if (element.viewedLeafCount == element.leafCount) {
+        cache.watched[element.ratingKey] = true;
+      }
     }
 
     if (element.Guid) {
@@ -63,7 +70,7 @@ export async function buildPlexEpisodesCache(key) {
     for (const episode of episodes.data.MediaContainer.Metadata) {
       cache[episode.parentIndex] ||= {};
       cache[episode.parentIndex][episode.index] = {
-        lastViewedAt: episode.lastViewedAt,
+        watched: episode.viewCount > 0,
         key: episode.ratingKey,
       };
     }
