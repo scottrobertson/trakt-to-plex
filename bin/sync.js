@@ -35,6 +35,8 @@ if (traktAccessToken) {
   });
 }
 
+console.time("sync");
+
 logBlue("Fetching movies from Trakt");
 const traktWatchedMovies = await trakt.users.watched({
   username: getConfig("traktUsername"),
@@ -67,6 +69,8 @@ const sections = getConfig("plexSections");
 const plexSections = await loadSections();
 
 for (const section of sections) {
+  console.time(`Section: ${section}`);
+
   logBlue(`Processing section: ${section}`);
   console.log("");
 
@@ -84,4 +88,13 @@ for (const section of sections) {
   } else if (sectionConfig.type === "show") {
     await processShows(plexCache, sectionConfig, traktWatchedShows);
   }
+
+  console.log("");
+  console.log("------------");
+  console.timeEnd(`Section: ${section}`);
+  console.log("------------");
+  console.log("");
 }
+
+console.log("------------");
+console.timeEnd("sync");
