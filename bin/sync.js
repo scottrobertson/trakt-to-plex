@@ -30,16 +30,12 @@ if (traktAccessToken) {
   console.log("");
 
   const code = await askQuestion("Enter the code: ");
-
   trakt.exchange_code(code).then((result) => {
     setConfig("traktAccessToken", result.access_token);
   });
 }
 
-const sections = getConfig("plexSections")
-  .split(",")
-  .map((s) => s.trim());
-
+const sections = getConfig("plexSections");
 const plexSections = await loadSections();
 
 for (const section of sections) {

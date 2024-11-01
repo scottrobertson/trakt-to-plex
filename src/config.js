@@ -7,7 +7,7 @@ export const configRequired = {
   plexServer: "What is your Plex Server URL?",
   plexToken: "What is your Plex Token?",
   plexSections:
-    "What are the Plex sections you want to sync? (comma separated) e.g. Movies,TV Shows",
+    "What are the Plex sections you want to sync? (comma separated) e.g. Movies, TV Shows",
   traktClientId: "What is your Trakt Client ID?",
   traktClientSecret: "What is your Trakt Client Secret?",
   traktUsername: "What is your Trakt Username?",
@@ -39,6 +39,11 @@ export function getConfig(key) {
 
 // Function to set a configuration value and save it
 export function setConfig(key, value) {
+  // We want to store this as an array
+  if (key === "plexSections") {
+    value = value.split(",").map((s) => s.trim());
+  }
+
   config[key] = value;
   saveConfig();
 }
