@@ -11,3 +11,10 @@ This is specifically designed to work with very large Plex libraries. Most of th
 - Clone repo
 - Run `npm install`
 - Run `npm run sync`
+
+### Notes
+
+- This tool is early, and you should read the code before using it
+- Do backups before using it
+- If something is already marked as watched in Plex, it will be skipped
+- It's not possible to see a watched time/date in Plex. It will be set as "now"
