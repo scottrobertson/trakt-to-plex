@@ -9,5 +9,8 @@
     "axios": "^1.7.7",
     "chalk": "^5.3.0",
     "trakt.tv": "^8.2.0"
+  },
+  "scripts": {
+    "sync": "node bin/sync.js"
   }
 }

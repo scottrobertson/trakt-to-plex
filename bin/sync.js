@@ -5,7 +5,7 @@ import {
   markAsWatched,
   findPlexGuid,
   loadSections,
-} from "./src/plex.js";
+} from "../src/plex.js";
 
 import {
   askQuestion,
@@ -14,9 +14,9 @@ import {
   logYellow,
   logBlue,
   formatSeasonEpisode,
-} from "./src/utils.js";
+} from "../src/utils.js";
 
-import { getConfig, setConfig, configRequired } from "./src/config.js";
+import { getConfig, setConfig, configRequired } from "../src/config.js";
 
 // Ensure all required config values are set
 for (const [key, message] of Object.entries(configRequired)) {
