@@ -1,5 +1,5 @@
 import Trakt from "trakt.tv";
-import { buildPlexCache, loadSections } from "../src/plex.js";
+import { buildPlexSectionCache, loadSections } from "../src/plex.js";
 import { askQuestion, logRed, logBlue } from "../src/utils.js";
 import { getConfig, setConfig, configRequired } from "../src/config.js";
 import { processShows } from "../src/shows.js";
@@ -69,10 +69,9 @@ const sections = getConfig("plexSections");
 const plexSections = await loadSections();
 
 for (const section of sections) {
-  console.time(`Section: ${section}`);
+  const timerStart = performance.now();
 
-  logBlue(`Processing section: ${section}`);
-  console.log("");
+  logBlue(`Fetching section from Plex: ${section}`);
 
   const sectionConfig = plexSections[section];
   if (!sectionConfig) {
@@ -81,7 +80,12 @@ for (const section of sections) {
     continue;
   }
 
-  const plexCache = await buildPlexCache(sectionConfig);
+  const plexCache = await buildPlexSectionCache(sectionConfig);
+  console.log(`Fetched ${Object.keys(plexCache.keys).length} items from Plex`);
+  console.log("");
+
+  logBlue(`Processing type: ${sectionConfig.type}`);
+  console.log("");
 
   if (sectionConfig.type === "movie") {
     await processMovies(plexCache, sectionConfig, traktWatchedMovies);
@@ -89,9 +93,8 @@ for (const section of sections) {
     await processShows(plexCache, sectionConfig, traktWatchedShows);
   }
 
-  console.log("");
-  console.log("------------");
-  console.timeEnd(`Section: ${section}`);
+  const durationInSeconds = (performance.now() - timerStart) / 1000;
+  console.log(`Took ${durationInSeconds.toFixed(2)}s`);
   console.log("------------");
   console.log("");
 }

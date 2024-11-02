@@ -16,9 +16,13 @@ export function askQuestion(query) {
 }
 
 export function formatSeasonEpisode(season, episode) {
-  const seasonStr = `S${season.toString().padStart(2, "0")}`;
+  const seasonStr = formatSeason(season);
   const episodeStr = `E${episode.toString().padStart(2, "0")}`;
   return `${seasonStr}${episodeStr}`;
+}
+
+export function formatSeason(season) {
+  return `S${season.toString().padStart(2, "0")}`;
 }
 
 export function logBlue(message) {

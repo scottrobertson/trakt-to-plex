@@ -1,17 +1,18 @@
 import {
-  buildPlexEpisodesCache,
   findPlexIdFromGuid,
   markAsWatched,
+  getSeasons,
+  getEpisodes,
 } from "./plex.js";
-import { logGreen, logRed, logYellow, formatSeasonEpisode } from "./utils.js";
+import {
+  logGreen,
+  logRed,
+  logYellow,
+  formatSeasonEpisode,
+  formatSeason,
+} from "./utils.js";
 
 export async function processShows(plexCache, sectionConfig, watchedShows) {
-  console.log(` - Shows in Trakt: ${watchedShows.length}`);
-  console.log(` - Shows in Plex: ${Object.keys(plexCache.keys).length}`);
-  console.log("");
-  console.log("------------");
-  console.log("");
-
   for (const [index, show] of watchedShows.entries()) {
     console.log(
       `${index + 1}/${watchedShows.length} - ${show.show.title} (${
@@ -35,17 +36,27 @@ async function processShow(plexCache, sectionConfig, show) {
   }
 
   if (plexGuid && plexKey) {
-    const plexEpisodesCache = await buildPlexEpisodesCache(plexKey);
+    const plexSeasons = await getSeasons(plexKey);
 
     for (const season of show.seasons) {
+      const seasonInPlex = plexSeasons[season.number];
+
+      if (seasonInPlex?.watched) {
+        logYellow(`${formatSeason(season.number)} already watched in Plex`);
+        continue;
+      }
+
+      const plexEpisodes = seasonInPlex
+        ? await getEpisodes(seasonInPlex.key)
+        : {};
+
       for (const episode of season.episodes) {
         const formattedEpisode = formatSeasonEpisode(
           season.number,
           episode.number
         );
 
-        const episodeInPlex =
-          plexEpisodesCache[season.number]?.[episode.number];
+        const episodeInPlex = plexEpisodes[episode.number];
 
         if (episodeInPlex) {
           const episodeWatchedInPlex = episodeInPlex?.watched;
@@ -58,13 +69,13 @@ async function processShow(plexCache, sectionConfig, show) {
           }
         } else {
           logRed(
-            `${formattedEpisode} not found in Plex Section: ${sectionConfig.title}`
+            `${formattedEpisode} not found in Plex (${sectionConfig.title})`
           );
         }
       }
     }
   } else {
-    logRed(`Could not find in Plex Section: ${sectionConfig.title}`);
+    logRed(`Could not find in Plex (${sectionConfig.title})`);
   }
 
   console.log("");

@@ -24,7 +24,7 @@ export async function loadSections() {
   return sections;
 }
 
-export async function buildPlexCache(sectionConfig) {
+export async function buildPlexSectionCache(sectionConfig) {
   const requestUrl = `${plexServer}/library/sections/${sectionConfig.key}/all?includeGuids=1`;
   const response = await axios.get(requestUrl);
 
@@ -58,25 +58,34 @@ export async function buildPlexCache(sectionConfig) {
   return cache;
 }
 
-export async function buildPlexEpisodesCache(key) {
-  const cache = {};
-  const seasonsUrl = `${plexServer}${key}`;
-  const seasons = await axios.get(seasonsUrl);
+export async function getSeasons(showKey) {
+  const url = `${plexServer}${showKey}`;
+  const response = await axios.get(url);
 
-  for (const season of seasons.data.MediaContainer.Metadata) {
-    const episodesUrl = `${plexServer}${season.key}`;
-    const episodes = await axios.get(episodesUrl);
+  const seasonsHash = {};
+  response.data.MediaContainer.Metadata.forEach((season) => {
+    seasonsHash[season.index] = {
+      watched: season.viewedLeafCount >= season.leafCount,
+      ...season,
+    };
+  });
 
-    for (const episode of episodes.data.MediaContainer.Metadata) {
-      cache[episode.parentIndex] ||= {};
-      cache[episode.parentIndex][episode.index] = {
-        watched: episode.viewCount > 0,
-        key: episode.ratingKey,
-      };
-    }
-  }
+  return seasonsHash;
+}
 
-  return cache;
+export async function getEpisodes(seasonKey) {
+  const url = `${plexServer}${seasonKey}`;
+  const response = await axios.get(url);
+
+  const episodesHash = {};
+  response.data.MediaContainer.Metadata.forEach((episode) => {
+    episodesHash[episode.index] = {
+      watched: episode.viewCount > 0,
+      ...episode,
+    };
+  });
+
+  return episodesHash;
 }
 
 export async function markAsWatched(ratingKey) {
@@ -92,6 +101,9 @@ export async function markAsWatched(ratingKey) {
   }
 }
 
+// Find the Plex ID from the External GUIDs
+// This is used to match Trakt shows to Plex Shows
+// The Trakt API returns shows with GUIDs like "imdb://tt123456"
 export function findPlexIdFromGuid(plexCache, ids) {
   for (const [service, id] of Object.entries(ids)) {
     const identifier = `${service}://${id}`;
