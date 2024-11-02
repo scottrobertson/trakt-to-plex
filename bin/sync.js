@@ -1,6 +1,6 @@
 import Trakt from "trakt.tv";
 import { buildPlexSectionCache, loadSections } from "../src/plex.js";
-import { askQuestion, logRed, logBlue } from "../src/utils.js";
+import { askQuestion, logRed, logBlue, logYellow } from "../src/utils.js";
 import { getConfig, setConfig, configRequired } from "../src/config.js";
 import { processShows } from "../src/shows.js";
 import { processMovies } from "../src/movies.js";
@@ -36,6 +36,13 @@ if (traktAccessToken) {
 }
 
 console.time("sync");
+
+const isDryRun = process.argv.includes("--dry-run");
+
+if (isDryRun) {
+  logYellow("!! Dry Run. Will not mark as watched");
+  console.log("");
+}
 
 logBlue("Fetching movies from Trakt");
 const traktWatchedMovies = await trakt.users.watched({
@@ -88,9 +95,9 @@ for (const section of sections) {
   console.log("");
 
   if (sectionConfig.type === "movie") {
-    await processMovies(plexCache, sectionConfig, traktWatchedMovies);
+    await processMovies(plexCache, sectionConfig, traktWatchedMovies, isDryRun);
   } else if (sectionConfig.type === "show") {
-    await processShows(plexCache, sectionConfig, traktWatchedShows);
+    await processShows(plexCache, sectionConfig, traktWatchedShows, isDryRun);
   }
 
   const durationInSeconds = (performance.now() - timerStart) / 1000;

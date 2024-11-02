@@ -32,6 +32,14 @@ Took 60.16s
 - Run `npm install`
 - Run `npm run sync`
 
+### Dry Run
+
+You can run the tool without actually marking anything as watched:
+
+```shell
+npm run sync -- --dry-run
+```
+
 ### Notes
 
 - This tool is early, and you should read the code before using it

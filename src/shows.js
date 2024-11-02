@@ -12,7 +12,12 @@ import {
   formatSeason,
 } from "./utils.js";
 
-export async function processShows(plexCache, sectionConfig, watchedShows) {
+export async function processShows(
+  plexCache,
+  sectionConfig,
+  watchedShows,
+  isDryRun
+) {
   for (const [index, show] of watchedShows.entries()) {
     console.log(
       `${index + 1}/${watchedShows.length} - ${show.show.title} (${
@@ -20,11 +25,11 @@ export async function processShows(plexCache, sectionConfig, watchedShows) {
       })`
     );
 
-    await processShow(plexCache, sectionConfig, show);
+    await processShow(plexCache, sectionConfig, show, isDryRun);
   }
 }
 
-async function processShow(plexCache, sectionConfig, show) {
+async function processShow(plexCache, sectionConfig, show, isDryRun) {
   const plexGuid = findPlexIdFromGuid(plexCache, show.show.ids);
   const plexKey = plexCache.keys[plexGuid];
   const showWatched = plexCache.watched[plexGuid];
@@ -64,8 +69,14 @@ async function processShow(plexCache, sectionConfig, show) {
           if (episodeWatchedInPlex) {
             logYellow(`${formattedEpisode} already watched in Plex`);
           } else {
-            logGreen(`${formattedEpisode} marked as watched in Plex`);
-            await markAsWatched(episodeInPlex?.key);
+            if (isDryRun) {
+              logGreen(
+                `${formattedEpisode} marked as watched in Plex (dry run)`
+              );
+            } else {
+              logGreen(`${formattedEpisode} marked as watched in Plex`);
+              await markAsWatched(episodeInPlex?.key);
+            }
           }
         } else {
           logRed(
