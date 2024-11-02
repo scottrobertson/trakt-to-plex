@@ -35,8 +35,7 @@ if (traktAccessToken) {
   });
 }
 
-console.time("sync");
-
+const timerStart = performance.now();
 const isDryRun = process.argv.includes("--dry-run");
 
 if (isDryRun) {
@@ -76,7 +75,7 @@ const sections = getConfig("plexSections");
 const plexSections = await loadSections();
 
 for (const section of sections) {
-  const timerStart = performance.now();
+  const sectionTimerStart = performance.now();
 
   logBlue(`Fetching section from Plex: ${section}`);
 
@@ -100,11 +99,12 @@ for (const section of sections) {
     await processShows(plexCache, sectionConfig, traktWatchedShows, isDryRun);
   }
 
-  const durationInSeconds = (performance.now() - timerStart) / 1000;
-  console.log(`Took ${durationInSeconds.toFixed(2)}s`);
+  const sectionDurationInSeconds =
+    (performance.now() - sectionTimerStart) / 1000;
+  console.log(`Took ${sectionDurationInSeconds.toFixed(2)}s`);
   console.log("------------");
   console.log("");
 }
 
-console.log("------------");
-console.timeEnd("sync");
+const durationInSeconds = (performance.now() - timerStart) / 1000;
+console.log(`Full sync took ${durationInSeconds.toFixed(2)}s`);
