@@ -75,7 +75,7 @@ async function processShow(plexCache, sectionConfig, show, isDryRun) {
               );
             } else {
               logGreen(`${formattedEpisode} marked as watched in Plex`);
-              await markAsWatched(episodeInPlex?.key);
+              await markAsWatched(episodeInPlex.ratingKey);
             }
           }
         } else {
