@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getConfig } from "./config.js";
+import { logRed } from "./utils.js";
 
 const plexToken = getConfig("plexToken");
 const plexServer = getConfig("plexServer");
@@ -92,12 +93,9 @@ export async function markAsWatched(ratingKey) {
   const url = `${plexServer}/:/scrobble?key=${ratingKey}&identifier=com.plexapp.plugins.library&X-Plex-Token=${plexToken}`;
 
   try {
-    const response = await axios.get(url);
-    if (response.status !== 200) {
-      console.error("Failed to mark as watched:", response.statusText);
-    }
+    await axios.get(url);
   } catch (error) {
-    console.error("Error marking as watched:", error.message);
+    logRed("Error marking as watched:", error.message);
   }
 }
 
