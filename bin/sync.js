@@ -4,6 +4,10 @@ import { askQuestion, logRed, logBlue, logYellow } from "../src/utils.js";
 import { getConfig, setConfig, configRequired } from "../src/config.js";
 import { processShows } from "../src/shows.js";
 import { processMovies } from "../src/movies.js";
+import {
+  processShowsWatchlist,
+  processMoviesWatchlist,
+} from "../src/watchlist.js";
 
 // Ensure all required config values are set
 for (const [key, message] of Object.entries(configRequired)) {
@@ -71,6 +75,33 @@ traktWatchedShows.sort((a, b) => {
 console.log(`Fetched ${traktWatchedShows.length} shows from Trakt`);
 console.log("");
 
+let traktShowsWatchlist, traktMoviesWatchlist;
+const syncWatchlist = getConfig("syncWatchlist");
+
+if (syncWatchlist) {
+  logBlue("Fetching shows watchlist from Trakt");
+  traktShowsWatchlist = await trakt.users.watchlist({
+    username: getConfig("traktUsername"),
+    type: "shows",
+  });
+
+  console.log(
+    `Fetched ${traktShowsWatchlist.length} watchlist shows from Trakt`
+  );
+  console.log("");
+
+  logBlue("Fetching movies watchlist from Trakt");
+  traktMoviesWatchlist = await trakt.users.watchlist({
+    username: getConfig("traktUsername"),
+    type: "movies",
+  });
+
+  console.log(
+    `Fetched ${traktMoviesWatchlist.length} watchlist movies from Trakt`
+  );
+  console.log("");
+}
+
 const sections = getConfig("plexSections");
 const plexSections = await loadSections();
 
@@ -94,8 +125,22 @@ for (const section of sections) {
   console.log("");
 
   if (sectionConfig.type === "movie") {
+    if (syncWatchlist) {
+      logBlue("Processing watchlist: movies");
+      await processMoviesWatchlist(plexCache, traktMoviesWatchlist, isDryRun);
+      console.log("");
+    }
+
+    logBlue("Processing watch states: movies");
     await processMovies(plexCache, sectionConfig, traktWatchedMovies, isDryRun);
   } else if (sectionConfig.type === "show") {
+    if (syncWatchlist) {
+      logBlue("Processing watchlist: shows");
+      await processShowsWatchlist(plexCache, traktShowsWatchlist, isDryRun);
+      console.log("");
+    }
+
+    logBlue("Processing watch states: shows");
     await processShows(plexCache, sectionConfig, traktWatchedShows, isDryRun);
   }
 

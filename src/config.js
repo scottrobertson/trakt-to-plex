@@ -11,6 +11,7 @@ export const configRequired = {
   traktClientId: "What is your Trakt Client ID?",
   traktClientSecret: "What is your Trakt Client Secret?",
   traktUsername: "What is your Trakt Username?",
+  syncWatchlist: "Do you want to sync your Trakt watchlist to Plex? (yes/no)",
 };
 
 let config = {};
@@ -38,6 +39,10 @@ export function setConfig(key, value) {
   // We want to store this as an array
   if (key === "plexSections") {
     value = value.split(",").map((s) => s.trim());
+  }
+
+  if (key === "syncWatchlist") {
+    value = value === "yes";
   }
 
   config[key] = value;

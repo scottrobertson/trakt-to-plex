@@ -9,6 +9,37 @@ axios.defaults.params = {
   "X-Plex-Token": plexToken,
 };
 
+export async function findMetadataId(key, ids, type) {
+  let agent = "tv.plex.agents.series";
+  if (type === "movie") {
+    agent = "tv.plex.agents.movie";
+  }
+
+  const url = `${plexServer}/library/metadata/${key}/matches?manual=1&title=tmdb-${ids.tmdb}&agent=${agent}&year=&language=en-US`;
+
+  try {
+    const response = await axios.get(url);
+    const searchResult = response.data.MediaContainer.SearchResult?.[0];
+
+    // plex://show/[ID]
+    const guid = searchResult?.guid;
+    if (guid) {
+      return guid.split("/")[3];
+    }
+  } catch (error) {}
+}
+
+export async function isWatchlisted(key) {
+  const url = `https://metadata.provider.plex.tv/library/metadata/${key}/userState`;
+  const response = await axios.get(url);
+  return response.data?.MediaContainer?.UserState?.watchlistedAt > 0;
+}
+
+export async function addToWatchlist(key) {
+  const url = `https://metadata.provider.plex.tv/actions/addToWatchlist?ratingKey=${key}`;
+  await axios.put(url);
+}
+
 export async function loadSections() {
   const url = `${plexServer}/library/sections`;
   const response = await axios.get(url);
@@ -37,7 +68,6 @@ export async function buildPlexSectionCache(sectionConfig) {
 
   response.data.MediaContainer.Metadata.forEach(async (element) => {
     cache.keys[element.ratingKey] = element.key;
-
     if (element.type == "movie") {
       if (element.viewCount > 0) {
         cache.watched[element.ratingKey] = true;
